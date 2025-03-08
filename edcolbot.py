@@ -73,7 +73,7 @@ async def update(interaction: discord.Interaction, effort_id: str, *, material_b
 
     materials = {}    
     for match in re.finditer(r'(\D+)\s([\d,]+)', material_block, re.S):
-        commodity = match.group(1).upper().strip()
+        commodity = match.group(1).upper().replace(' ', '').strip()
         amount = int(match.group(2).replace(',', ''))
         materials[commodity] = amount
 
@@ -99,13 +99,13 @@ async def deliver(interaction: discord.Interaction, effort_id: str, *, material_
     materials = data[effort_id]['materials']
     message = ""
     for match in re.finditer(r'(\D+)\s([\d,]+)', material_block, re.S):
-        commodity = match.group(1).upper().strip()
+        commodity = match.group(1).upper().replace(' ', '').strip()
         amount = int(match.group(2).replace(',', ''))
         if materials[commodity]:
             materials[commodity] = max(0, materials[commodity] - amount)
         else:
             message += f"Material {commodity} not required for this effort.\n"
-            return
+            continue
         
         if materials[commodity] == 0:
             del materials[commodity]
@@ -163,7 +163,8 @@ async def effort(interaction: discord.Interaction, effort_id: str):
 
 def effort_message(effort_id, effort):
     message = f"{effort_id}. **{effort['system']} - {effort['installation']} ({effort['owner']})**\n"
-    for material, amount in effort['materials'].items():
+    for material in sorted(effort['materials']):
+        amount = effort['materials'][material]
         message += f"  - {material}: {amount}\n"
     return message
 
