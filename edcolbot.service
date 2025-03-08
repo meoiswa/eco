@@ -1,0 +1,17 @@
+[Unit]
+Description=Elite Dangerous Colonization Bot with Watchdog
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/meoiswa/edcolbot/main.py
+WorkingDirectory=/home/meoiswa/edcolbot
+Restart=always
+RestartSec=5
+User=meoiswa
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
